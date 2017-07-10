@@ -1,0 +1,2 @@
+128 images -> 67 sec  |  batch graident descent   iterations = 3000
+iterations = 1500  32 sec

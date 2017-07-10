@@ -1,0 +1,48 @@
+# Directories #
+/build/
+/bin/
+target/
+classes/
+/build
+buildSrc/build
+/spring-*/build
+/src/asciidoc/build
+lib/
+
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.db
+
+# Eclipse artifacts, including WTP generated manifests
+.classpath
+.project
+spring-*/src/main/java/META-INF/MANIFEST.MF
+
+
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+
+# sbteclipse plugin
+.target
+
+# STS (Spring Tool Suite)
+.springBeans
