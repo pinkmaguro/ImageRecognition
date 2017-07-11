@@ -128,5 +128,13 @@ public class SMatrixTest {
 		assertThat(C.get(C.getNumRows(), C.getNumCols()), is(4.0));
 		System.out.println(C);
 	}
+	
+	@Test
+	public void testShow() {
+		System.out.println("test show(int)");
+		SMatrix m = new SMatrix(new double[]{9.123456789, 3},1,2);
+		System.out.println(m.toString());
+		System.out.println(m.showMatrix(0));
+	}
 }
 

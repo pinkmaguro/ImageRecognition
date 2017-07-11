@@ -125,7 +125,14 @@ public class RegMath {
 	public static int guessMultiClassificationRegression(SMatrix bigTheta, SMatrix x) {
 		
 		SMatrix prob = mul(x, bigTheta);
-		logger.info(prob.toString());
+		int maxPos = SMatrixMath.maxPosition(prob, 1, SMatrixMath.ROW);
+		
+		return maxPos - 1;
+	}
+	
+	public static int guessMultiClassificationRegression(SMatrix bigTheta, SMatrix x, SMatrix prob) {
+		
+		SMatrix.hardCopy(mul(x, bigTheta), prob);
 		int maxPos = SMatrixMath.maxPosition(prob, 1, SMatrixMath.ROW);
 		
 		return maxPos - 1;

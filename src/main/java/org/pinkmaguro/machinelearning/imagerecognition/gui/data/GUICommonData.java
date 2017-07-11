@@ -30,9 +30,7 @@ public class GUICommonData {
 	String imageDir;
 	String dataDir;
 	
-	String imageDataFilePath;
 	String imageDataFileName = "imageData.txt";
-	String thetaFilePath;
 	String thetaFileName = "theta.txt";
 	
 	FileFilter fileExtensionFilter;
@@ -45,8 +43,6 @@ public class GUICommonData {
 	public void setUp(String imageDir) {
 		this.imageDir = imageDir;
 		this.dataDir = FileUtil.getPath(imageDir, "data");
-		this.imageDataFilePath = FileUtil.getPath(dataDir, imageDataFileName);
-		this.thetaFilePath = FileUtil.getPath(dataDir, thetaFileName);
 		
 		FileUtil.createDirectory(imageDir);
 		FileUtil.createDirectory(dataDir);
@@ -58,7 +54,7 @@ public class GUICommonData {
 	}
 	
 	public String getImageDataFilePath() {
-		return imageDataFilePath;
+		return FileUtil.getPath(dataDir, imageDataFileName);
 	}
 	
 	public int getFramePosX() {

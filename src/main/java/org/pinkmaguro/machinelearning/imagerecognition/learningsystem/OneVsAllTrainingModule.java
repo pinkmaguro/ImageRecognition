@@ -25,15 +25,21 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 	private static Logger logger = LoggerFactory.getLogger(OneVsAllTrainingModule.class); 
 	private GUICommonData commonData;
 	
+	private SMatrix X;
+	private SMatrix y;
 	private SMatrix bigTheta;
+	public SMatrix prob;
 	
 	protected int K;
 	protected  double alpha = 0.01;
 	protected  int iterations = 1500;
-	protected  double lambda = 0;
+	protected  double lambda = 0.1;
+	
+	
 	
 	public OneVsAllTrainingModule(GUICommonData commonData) {
 		this.commonData = commonData;
+
 	}
 	
 	
@@ -43,8 +49,6 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		try {
 			
 			String fileName = createHashedFileName(num);
-			System.out.println(fileName);
-			System.out.println(commonData.getImageDir());
 			File imageFile = new File(FileUtil.getPath(commonData.getImageDir(), fileName));
 			BufferedImage img = ImageUtil.simplifyImage(panelImage, 
 					commonData.getImageSizeX(), commonData.getImageSizeY());
@@ -86,8 +90,8 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 			String hash = fileName.substring(beginIndex + 1, endIndex);
 			
 			if (!trainedData.contains(hash)) {
-				sb.append(numStr).append(TAB);
 				sb.append(hash).append(TAB);
+				sb.append(numStr).append(TAB);
 				sb.append(ImageUtil.imageToText(ImageUtil.getImage(file), TAB, true)); 
 				sb.append(NEWLINE);
 				count++;
@@ -95,10 +99,11 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		}
 		
 		TextUtil.append(commonData.getImageDataFilePath(), sb.toString());
-	
 		logger.info("Image data file was updated : " + count );
 		
-		bigTheta = calcuateTheta();
+		prepareXyMatrix();
+
+		calcuateTheta();
 	
 		logger.info("Training proccess is done.");
 		
@@ -114,39 +119,16 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		for (String line : lines) {
 			String[] elements = line.split(TAB);
 			if (elements.length > 2)
-				set.add(elements[1]);
+				set.add(elements[0]);
 		}
 		return set;
 	}
 	
-	private SMatrix calcuateTheta() {
+	private void calcuateTheta() {
 		logger.info("calucate Theta...");
-		
-		String[] lines = TextUtil.readLines(commonData.getImageDataFilePath(), true);
-		int m = lines.length;
-		
-		SMatrix X  = new SMatrix(m, 1 + commonData.getImageSizeX() * commonData.getImageSizeY());
-		SMatrix y  = new SMatrix(m, 1);
 		SMatrix initial_theta = SMatrix.zeros(X.getNumCols(), 1);
-		
-		for (int i = 1; i <= m; i++) {
-			
-			String[] elements = lines[i - 1].split(TAB);
-			String numStr = elements[0];
-			
-			y.set(i, Double.parseDouble(numStr));
-			
-			for (int j = 2; j < elements.length; j++) 
-				X.set(i, j, Double.parseDouble(elements[j]));
-		}
-		
-		for (int i = 1; i<= m ; i++)
-			X.set(i, 1, 1);
-		
-		logger.info("Reading X, y matrix from file is done.");
-		SMatrix bigTheta = RegMath.trainMultiClassificationRegression(X, y, initial_theta,
+		this.bigTheta = RegMath.trainMultiClassificationRegression(X, y, initial_theta,
 				lambda, alpha, iterations, K);
-		return bigTheta;
 	}
 
 	@Override
@@ -156,11 +138,13 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		
 		SMatrix x = new SMatrix(ImageUtil.imageToInt1DArray(guessImage, true), 
 				1, commonData.getPixelSize());
-		SMatrix X = SMatrix.addOnes(x);
+		x = SMatrix.addOnes(x);
 		
-		bigTheta = new SMatrix(TextUtil.readAll(commonData.getThetaFilePath(), true));
-		
-		int guess = RegMath.guessMultiClassificationRegression(bigTheta, X);
+		prob = new SMatrix(1, K);
+		int guess = RegMath.guessMultiClassificationRegression(bigTheta, x, prob);
+		logger.info("X * theta: " + prob.showMatrix(2));
+		prob = SMatrix.applySigmoid(prob);
+		logger.info("Prob : " + prob.showMatrix(2));
 		logger.info("Guess : " + guess);
 		return guess;
 	}
@@ -177,6 +161,12 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		this.K = K;
 	}
 	
-	
+	private void prepareXyMatrix() {
+		SMatrix x = new SMatrix(TextUtil.readDouble(commonData.getImageDataFilePath()
+				, 2, commonData.getPixelSize(), TAB));
+		this.X = SMatrix.addOnes(x);
+		this.y = new SMatrix(TextUtil.readDouble(commonData.getImageDataFilePath()
+				, 1, 1, TAB));
+	}
 
 }

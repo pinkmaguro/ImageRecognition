@@ -81,6 +81,20 @@ public class TextUtil {
 		}
 		
 	}
+	
+	public static double[][] readDouble(String fileName, int col, int numCols, String separator) {
+		String [] lines = readLines(fileName, true);
+		double [][] matrix = new double[lines.length][numCols];
+		
+		for (int i = 0; i < lines.length; i++) {
+			String [] elements = lines[i].split(separator);
+			for (int j = 0; j < numCols; j++) {
+				matrix[i][j] = Double.parseDouble(elements[col + j]);
+			}
+		}
+		
+		return matrix;
+	}
 	 
 
 
