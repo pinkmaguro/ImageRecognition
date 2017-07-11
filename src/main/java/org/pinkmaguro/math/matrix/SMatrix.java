@@ -4,6 +4,8 @@ import static org.pinkmaguro.machinelearning.imagerecognition.gui.data.GUICommon
 
 import java.util.Arrays;
 
+import org.pinkmaguro.math.regression.RegMath;
+
 
 public class SMatrix {
 
@@ -68,8 +70,25 @@ public class SMatrix {
 		return sb.toString();
 	}
 	
+	
 	public String showSize() {
 		return  "matrix  size: " + numRows + " × " + numCols;
+	}
+	
+	public String showMatrix(int digits) {
+		if (digits < 0)  throw new IllegalArgumentException("digits should be non-negative integer");
+		StringBuilder sb = new StringBuilder();
+		int multiply = (int) Math.pow(10, digits);
+		for (int i = 0; i < numRows; i++) {
+			for (int j = 0; j < numCols; j++) {
+				double val = Math.floor(multiply * data[i][j]) / multiply;
+				sb.append(val);
+				if (j < numCols - 1) sb.append(TAB);
+			}
+			sb.append(NEWLINE);
+		}
+		
+		return sb.toString();
 	}
 	
 	public SMatrix(double[] data, int numRows, int numCols) {
@@ -291,6 +310,15 @@ public class SMatrix {
 		
 		for (int i = 1; i <= A.getNumElements(); i++)
 			modified.set(i,  Math.log(A.get(i)));
+		
+		return modified;
+	}
+	
+	public static SMatrix applySigmoid(SMatrix A) {
+		SMatrix modified = A.copy();
+		
+		for (int i = 1; i <= A.getNumElements(); i++)
+			modified.set(i,  RegMath.sigmoid(A.get(i)));
 		
 		return modified;
 	}
