@@ -142,9 +142,9 @@ public class OneVsAllTrainingModule implements ImageRecognitionTrainingModule {
 		
 		prob = new SMatrix(1, K);
 		int guess = RegMath.guessMultiClassificationRegression(bigTheta, x, prob);
-		logger.info("X * theta: " + prob.toString());
+		logger.info("X * theta: " + prob.showMatrix(2));
 		prob = SMatrix.applySigmoid(prob);
-		logger.info(prob.showMatrix(2));
+		logger.info("Prob : " + prob.showMatrix(2));
 		logger.info("Guess : " + guess);
 		return guess;
 	}

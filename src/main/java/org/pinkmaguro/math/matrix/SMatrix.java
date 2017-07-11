@@ -338,6 +338,12 @@ public class SMatrix {
 		return matrix;
 	}
 	
+	public static void hardCopy(SMatrix A, SMatrix B) {
+		assert(isSameDimension(A, B));
+		
+		for(int i = 1; i <= A.getNumElements(); i++) 
+			B.set(i, A.get(i));
+	}
 	
 	
 	public static boolean isSameDimension(SMatrix A, SMatrix B) {
